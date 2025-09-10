@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard - WTMU</title>
+    <link rel="stylesheet" href="./css/style-dashboard.css" />
+    <style>
+      .hidden {
+        display: none;
+      }
+
+      .file-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+      }
+
+      .file-table th,
+      .file-table td {
+        border: 1px solid #ddd;
+        padding: 8px;
+      }
+
+      .file-table th {
+        background-color: #f2f2f2;
+        text-align: left;
+      }
+
+      .pagination {
+        margin-top: 10px;
+      }
+
+      .pagination button {
+        margin: 0 2px;
+        padding: 5px 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <nav class="navbar">
+      <div class="nav-logo">WTMU</div>
+      <div class="nav-links">
+        <a href="dashboard.html">Home</a>
+        <a href="about.html">About</a>
+        <a href="developer.html">Developer Info</a>
+        <button onclick="window.location.href='loginpage.html'">Logout</button>
+      </div>
+    </nav>
+
+    <section id="dashboard">
+      <h2>Dashboard</h2>
+      <div class="dashboard-container">
+        <div class="sidebar">
+          <input type="text" id="search" placeholder="Search files..." />
+        </div>
+
+        <div class="library">
+          <form id="uploadForm" enctype="multipart/form-data">
+            <input
+              type="text"
+              name="fileName"
+              id="fileName"
+              placeholder="Enter file name"
+              required
+            />
+            <select name="monthUploaded" id="monthUploaded" required>
+              <option value="">Select Month</option>
+              <option value="January">January</option>
+              <option value="February">February</option>
+              <option value="March">March</option>
+              <option value="April">April</option>
+              <option value="May">May</option>
+              <option value="June">June</option>
+              <option value="July">July</option>
+              <option value="August">August</option>
+              <option value="September">September</option>
+              <option value="October">October</option>
+              <option value="November">November</option>
+              <option value="December">December</option>
+            </select>
+
+            <select name="yearUploaded" id="yearUploaded" required>
+              <option value="">Select year</option>
+              <option value="2025">2025</option>
+              <option value="2024">2024</option>
+              <option value="2023">2023</option>
+
+            </select>
+            <input
+              type="file"
+              name="pdfFile"
+              id="pdfFile"
+              accept="application/pdf"
+              required
+            />
+            <button type="submit">Upload PDF</button>
+          </form>
+
+          <table class="file-table">
+            <thead>
+              <tr>
+                <th>File Name</th>
+                <th>Month</th>
+                <th>Year</th>
+                <th>Stored File</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="tableBody"></tbody>
+          </table>
+
+          <div class="pagination" id="pagination"></div>
+        </div>
+      </div>
+    </section>
+
+    <script>
+      const BACKEND_BASE = "../backend";
+      const fileData = [];
+      const rowsPerPage = 5;
+      let currentPage = 1;
+
+      document
+        .getElementById("uploadForm")
+        .addEventListener("submit", function (e) {
+          e.preventDefault();
+          const formData = new FormData(this);
+
+          fetch(`${BACKEND_BASE}/upload.php`, {
+            method: "POST",
+            body: formData,
+          })
+            .then((res) => res.json())
+            .then((data) => {
+              if (data.success) {
+                alert("Upload successful!");
+                fetchAndRenderFiles();
+                document.getElementById("uploadForm").reset();
+              } else {
+                alert("Upload failed: " + data.message);
+              }
+            })
+            .catch(() => {
+              alert("Error uploading file.");
+            });
+        });
+
+      document.getElementById("search").addEventListener("input", () => {
+        currentPage = 1;
+        renderTable();
+      });
+
+      function fetchAndRenderFiles() {
+        fetch(`${BACKEND_BASE}/get-files.php`)
+          .then((res) => res.json())
+          .then((data) => {
+            if (data.success) {
+              fileData.length = 0;
+              fileData.push(...data.data);
+              renderTable();
+            } else {
+              alert("Failed to fetch files: " + data.message);
+            }
+          })
+          .catch((err) => {
+            console.error("Fetch error:", err);
+          });
+      }
+
+      function renderTable() {
+        const searchTerm = document
+          .getElementById("search")
+          .value.toLowerCase();
+        const filtered = fileData.filter((file) =>
+          file.file_name.toLowerCase().includes(searchTerm)
+        );
+
+        const start = (currentPage - 1) * rowsPerPage;
+        const end = start + rowsPerPage;
+        const paginated = filtered.slice(start, end);
+
+        const tableBody = document.getElementById("tableBody");
+        tableBody.innerHTML = "";
+
+        paginated.forEach((file) => {
+          const row = document.createElement("tr");
+          row.innerHTML = `
+            <td>${file.file_name}</td>
+            <td>${file.monthUploaded}</td>
+            <td>${file.yearUploaded}</td>
+            <td>${file.file_path}</td>
+            <td>
+              <button onclick="window.print()">Print</button>
+              <a href="../uploads/${file.file_path}" download>Download</a>
+            </td>
+          `;
+          tableBody.appendChild(row);
+        });
+
+        renderPagination(filtered.length);
+      }
+
+      function renderPagination(totalItems) {
+        const totalPages = Math.ceil(totalItems / rowsPerPage);
+        const pagination = document.getElementById("pagination");
+        pagination.innerHTML = "";
+
+        for (let i = 1; i <= totalPages; i++) {
+          const btn = document.createElement("button");
+          btn.textContent = i;
+          if (i === currentPage) btn.disabled = true;
+          btn.addEventListener("click", () => {
+            currentPage = i;
+            renderTable();
+          });
+          pagination.appendChild(btn);
+        }
+      }
+
+      fetchAndRenderFiles();
+    </script>
+  </body>
+</html>

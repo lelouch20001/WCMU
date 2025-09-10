@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login - WTMU</title>
+    <link rel="stylesheet" href="./css/style-loginpage.css" />
+  </head>
+  <body>
+    <nav class="navbar">
+      <div class="nav-logo">WTMU</div>
+      <div class="nav-links">
+        <a href="frontpage.html">Home</a>
+        <a href="about.html">About</a>
+        <a href="developer.html">Developer Info</a>
+      </div>
+    </nav>
+
+    <section id="login">
+      <h2>Login</h2>
+      <form id="loginForm">
+        <input type="text" id="username" placeholder="Username" required />
+        <input type="password" id="password" placeholder="Password" required />
+        <button type="submit">Login</button>
+      </form>
+    </section>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const loginForm = document.getElementById("loginForm");
+
+        loginForm.addEventListener("submit", function (e) {
+          e.preventDefault();
+
+          // Basic login check
+          const username = document.getElementById("username").value;
+          const password = document.getElementById("password").value;
+
+          if (username === "admin" && password === "admin123") {
+            window.location.href = "dashboard.html";
+          } else {
+            alert("Invalid username or password.");
+          }
+        });
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,82 @@
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  background: #f5f5f5;
+  color: #333;
+}
+
+.navbar {
+  background-color: #2e7d32;
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+}
+
+.nav-links a,
+.nav-links button {
+  margin-left: 1rem;
+  color: white;
+  text-decoration: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+#dashboard {
+  padding: 2rem;
+}
+
+.dashboard-container {
+  display: flex;
+  gap: 2rem;
+}
+
+.sidebar {
+  flex: 1;
+  max-width: 200px;
+}
+
+.sidebar input {
+  width: 100%;
+  padding: 0.5rem;
+}
+
+.library {
+  flex: 3;
+}
+
+#uploadBtn {
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  margin-bottom: 1rem;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.file-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: white;
+  padding: 0.75rem 1rem;
+  margin-bottom: 0.5rem;
+  border-radius: 4px;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+}
+
+.file-item button,
+.file-item a {
+  margin-left: 1rem;
+  padding: 0.4rem 0.75rem;
+  border: none;
+  border-radius: 3px;
+  background: #388e3c;
+  color: white;
+  text-decoration: none;
+  cursor: pointer;
+}
